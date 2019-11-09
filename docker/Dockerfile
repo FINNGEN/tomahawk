@@ -90,6 +90,7 @@ RUN mkdir -p /opt
 RUN cd /opt \
     && git clone https://github.com/samtools/htslib.git \
     && cd /opt/htslib \
+    && git checkout f5b75ff \
     && make \
     && make lib-static \
     && make install
@@ -101,7 +102,7 @@ RUN cd /opt \
     && make install
 
 RUN cd /opt \
-    && git clone https://mklarqvist:CpgqYBz6-S@github.com/mklarqvist/tomahawk \
+    && git clone https://github.com/FINNGEN/tomahawk \
     && cd /opt/tomahawk/ \
     && make \
     && make install
