@@ -149,7 +149,7 @@ bool twk_variant_importer::Import(void){
 		}
 		prev_mapped_pos = entry.pos;
 		prev_rec = vcf->bcf1_;
-		mapping_file << contig << "\t" << vcf->bcf1_->pos+1 << "\t" << contig << ":" << vcf->bcf1_->pos+1 << ":" << vcf->bcf1_->d.allele[0] << ":" << vcf->bcf1_->d.allele[1] << "\t" << contig << ":" << entry.pos+1 << "\n";
+		mapping_file << contig << "\t" << vcf->bcf1_->pos+1 << "\t" << contig << ":" << vcf->bcf1_->pos+1 << ":" << vcf->bcf1_->d.allele[0] << ":" << vcf->bcf1_->d.allele[1] << "\t" << vcf->vcf_header_.GetContig(vcf->bcf1_->rid)->name << ":" << entry.pos+1 << "\n";
 		if(vcf->bcf1_->n_fmt){
 			if(vcf->vcf_header_.GetFormat(vcf->bcf1_->d.fmt[0].id)->id == "GT"){
 				if(vcf->bcf1_->d.fmt[0].n != 2){
