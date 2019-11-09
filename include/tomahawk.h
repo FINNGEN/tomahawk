@@ -53,7 +53,7 @@ const std::string TOMAHAWK_AGGREGATE_MAGIC_HEADER  = "TWOAGG\1";
 const uint32_t    TOMAHAWK_AGGREGATE_MAGIC_HEADER_LENGTH = 7;
 
 /*------   Regular expression patterns  ------*/
-const std::regex TWK_REGEX_CANONICAL_BASES = std::regex("^[ATGC]{1}$");
+const std::regex TWK_REGEX_CANONICAL_BASES = std::regex("^[ATGC]+$");
 const std::regex TWK_REGEX_CONTIG_ONLY     = std::regex("^[A-Za-z0-9\\-_]+$");
 const std::regex TWK_REGEX_CONTIG_POSITION = std::regex("^[A-Za-z0-9\\-_]+\\:[0-9]+([\\.]{1}[0-9]+){0,1}([eE]{1}[0-9]{1})?$");
 const std::regex TWK_REGEX_CONTIG_RANGE    = std::regex("^[A-Za-z0-9\\-_]+\\:[0-9]+([\\.]{1}[0-9]+){0,1}([eE]{1}[0-9]{1})?\\-[0-9]+([\\.]{1}[0-9]+){0,1}([eE]{1}[0-9]{1})?$");
