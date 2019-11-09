@@ -3,6 +3,12 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Docs](https://img.shields.io/badge/Docs-Available-brightgreen.svg)](https://mklarqvist.github.io/tomahawk/)
 
+# Modified Tomahawk
+
+Allows indels, probably breaks the haplotype command but import and scalc are fine
+
+Allows multiple variants in the same position by changing their positions to unique ones and writing a mapping file between actual positions and Tomahawk positions
+
 ![screenshot](tomahawk.png)
 
 # Fast calculation of LD in large-scale cohorts
