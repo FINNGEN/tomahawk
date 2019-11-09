@@ -117,24 +117,39 @@ bool twk_variant_importer::Import(void){
 	memset(TWK_SITES_FILTERED, 0, sizeof(uint64_t)*8);
 	uint64_t n_tot_vnts = 0;
 
+	uint32_t prev_mapped_pos = 0;
+	std::ofstream mapping_file;
+	mapping_file.open(settings.output + ".mapping.txt");
+	mapping_file << "#chr\tpos\tvariant\ttwk_pos\n";
+	
 	// While there are bcf1_t records available.
 	while(vcf->next(BCF_UN_ALL)){
 		++n_tot_vnts;
 		tomahawk::twk1_t entry;
 		entry.pos = vcf->bcf1_->pos;
-		if(prev_rec == vcf->bcf1_){
-			if(vcf->bcf1_->n_allele == 2){
-				if(std::regex_match(vcf->bcf1_->d.allele[0],tomahawk::TWK_REGEX_CANONICAL_BASES) && std::regex_match(vcf->bcf1_->d.allele[1],tomahawk::TWK_REGEX_CANONICAL_BASES)){
-					std::cerr << utility::timestamp("LOG") << "Duplicate site dropped: " << vcf->vcf_header_.GetContig(vcf->bcf1_->rid)->name << ":" << vcf->bcf1_->pos+1  << std::endl;
-				}
-			}
-			prev_rec = vcf->bcf1_;
-			prev_rec.dropped = true;
-			++n_vnt_dropped;
-			continue;
+		std::string contig = vcf->vcf_header_.GetContig(vcf->bcf1_->rid)->name;
+		if (contig.substr(0, 3) == "chr") {
+		  contig = contig.substr(3, contig.size());
 		}
+		if (contig == "X") contig = "23";
+		if (contig == "Y") contig = "24";
+		if (contig == "M" || contig == "MT") contig = "25";
+		if(prev_rec == vcf->bcf1_ || entry.pos <= prev_mapped_pos){
+			if(vcf->bcf1_->n_allele == 2 && std::regex_match(vcf->bcf1_->d.allele[0],tomahawk::TWK_REGEX_CANONICAL_BASES) && std::regex_match(vcf->bcf1_->d.allele[1],tomahawk::TWK_REGEX_CANONICAL_BASES)){
+			  do {
+			    entry.pos++;
+			  } while(entry.pos <= prev_mapped_pos);
+			  std::cerr << utility::timestamp("LOG") << "Duplicate site, increasing position: " << vcf->vcf_header_.GetContig(vcf->bcf1_->rid)->name << ":" << vcf->bcf1_->pos+1  << " to " << entry.pos+1 << std::endl;
+			} else {
+			  prev_rec = vcf->bcf1_;
+			  prev_rec.dropped = true;
+			  ++n_vnt_dropped;
+			  continue;
+			}
+		}
+		prev_mapped_pos = entry.pos;
 		prev_rec = vcf->bcf1_;
-
+		mapping_file << contig << "\t" << vcf->bcf1_->pos+1 << "\t" << contig << ":" << vcf->bcf1_->pos+1 << ":" << vcf->bcf1_->d.allele[0] << ":" << vcf->bcf1_->d.allele[1] << "\t" << contig << ":" << entry.pos+1 << "\n";
 		if(vcf->bcf1_->n_fmt){
 			if(vcf->vcf_header_.GetFormat(vcf->bcf1_->d.fmt[0].id)->id == "GT"){
 				if(vcf->bcf1_->d.fmt[0].n != 2){
@@ -333,6 +348,7 @@ bool twk_variant_importer::Import(void){
 	}
 
 	if(stream_delete) delete stream;
+	mapping_file.close();
 	return(true);
 }
 }
