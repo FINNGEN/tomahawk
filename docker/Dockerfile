@@ -21,10 +21,10 @@
 # DEALINGS IN THE SOFTWARE.
 # ################################################################
 # Base image
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 ################## METADATA ######################
-LABEL base_image="ubuntu:18.04"
+LABEL base_image="ubuntu:22.04"
 LABEL version="1.0"
 LABEL software="Tomahawk"
 LABEL software.version="0.7.0"
@@ -39,14 +39,6 @@ LABEL about.tags="Genomics,Linkage-disequilibrium,LD"
 MAINTAINER Marcus D. R. Klarqvist <mk819@cam.ac.uk>
 
 ENV DEBIAN_FRONTEND noninteractive
-
-RUN mv /etc/apt/sources.list /etc/apt/sources.list.bkp && \
-    bash -c 'echo -e "deb mirror://mirrors.ubuntu.com/mirrors.txt xenial main restricted universe multiverse\n\
-deb mirror://mirrors.ubuntu.com/mirrors.txt xenial-updates main restricted universe multiverse\n\
-deb mirror://mirrors.ubuntu.com/mirrors.txt xenial-backports main restricted universe multiverse\n\
-deb mirror://mirrors.ubuntu.com/mirrors.txt xenial-security main restricted universe multiverse\n\n" > /etc/apt/sources.list' && \
-    cat /etc/apt/sources.list.bkp >> /etc/apt/sources.list && \
-    cat /etc/apt/sources.list
 
 RUN apt-get clean all &&  \
     apt-get update &&     \
@@ -74,13 +66,12 @@ RUN apt-get clean all &&  \
         sed             \
         dpkg            \
         fuse            \
-        git             \
         wget            \
         zip             \
         build-essential \
         pkg-config      \
         bzip2           \
-        git             \
+        g++-9           \
         zlib1g-dev &&   \
         apt-get clean && \
         apt-get purge && \
@@ -104,8 +95,8 @@ RUN cd /opt \
 RUN cd /opt \
     && git clone https://github.com/FINNGEN/tomahawk \
     && cd /opt/tomahawk/ \
-    && make \
-    && make install
+    && CC=/usr/bin/g++-9 CXX=/usr/bin/g++-9 make \
+    && CC=/usr/bin/g++-9 CXX=/usr/bin/g++-9 make install
 
 ENV PATH=$PATH:/usr/local/bin
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
